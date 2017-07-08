@@ -21,11 +21,10 @@ class ZhihuSpider(scrapy.Spider):
         pass
 
     def start_requests(self):
-        return [scrapy.Request("https://www.zhihu.com/#signin",headers=self.headers, callback=self.login)]
+        return [scrapy.Request("https://www.zhihu.com/",headers=self.headers, callback=self.login)]
 
     def login(self, response):
         match_obj = re.match('.*name="_xsrf" value="(.*?)"', response.text, re.S)
-        xsrf = ""
         if match_obj:
             xsrf = match_obj.group(1)
         else:
@@ -51,13 +50,13 @@ class ZhihuSpider(scrapy.Spider):
         try:
             im = Image.open('captcha.jpg')
             im.show()
-            im.close()
         except:
             pass
 
+        captcha = input("input captcha: ")
         post_url = "https://www.zhihu.com/login/phone_num"
         post_data = response.meta.get('post_data', {})
-        post_data["captcha"] = input("input captcha: ")
+        post_data["captcha"] = captcha
 
         return [scrapy.FormRequest(
             url=post_url,
@@ -69,4 +68,5 @@ class ZhihuSpider(scrapy.Spider):
     def check_login(self, response):
         # check login
         text_json = json.loads(response.body)
-        pass
+        for url in self.start_urls:
+            yield scrapy.Request(url, dont_filter=True, headers=self.headers)
