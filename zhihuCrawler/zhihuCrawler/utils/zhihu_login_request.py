@@ -7,8 +7,16 @@ except:
     import cookieslib # python2
 
 
+agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3141.7 Safari/537.36"
+
+headers = {
+    "HOST": "www.zhihu.com",
+    "Referer": "https://www.zhihu.com/",
+    "User-Agent": agent
+}
+
 def get_xsrf():
-    response = requests.get("https://www.zhihu.com")
+    response = requests.get("https://www.zhihu.com", headers=headers)
     print(response.text)
     return ""
 
