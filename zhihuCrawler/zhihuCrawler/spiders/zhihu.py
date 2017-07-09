@@ -3,6 +3,7 @@ import scrapy
 import re
 import json
 from PIL import Image
+from urllib import parse
 
 class ZhihuSpider(scrapy.Spider):
     name = 'zhihu'
@@ -18,6 +19,19 @@ class ZhihuSpider(scrapy.Spider):
     }
 
     def parse(self, response):
+        # dfs search: crawl all url(like /question/xxx) in a html file
+        all_urls = response.css("a::attr(href)").extract()
+        all_urls = [parse.urljoin(response.url, url) for url in all_urls]
+        all_urls = filter(lambda x: True if x.startswith("https://") else False, all_urls)
+        for url in all_urls:
+            match_obj = re.match("(.*?zhihu.com/question/(\d+))(/|$)", url)
+            if match_obj:
+                request_url = match_obj.group(1)
+                question_id = match_obj.group(2)
+                yield scrapy.Request(request_url, headers=self.headers, callback=self.parse_question)
+
+    def parse_question(self):
+        # extract question item
         pass
 
     def start_requests(self):
@@ -68,5 +82,6 @@ class ZhihuSpider(scrapy.Spider):
     def check_login(self, response):
         # check login
         text_json = json.loads(response.body)
-        for url in self.start_urls:
-            yield scrapy.Request(url, dont_filter=True, headers=self.headers)
+        if "msg" in text_json and text_json['msg'] == "登录成功":
+            for url in self.start_urls:
+                yield scrapy.Request(url, dont_filter=True, headers=self.headers)

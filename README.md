@@ -8,3 +8,8 @@ python3
 - requests
 - pillow
 
+### scrapy shell debug
+```
+scrapy shell -s USER_AGENT="xxx" xxxxxxxx
+```
+
