@@ -7,6 +7,8 @@ python3
 - scrapy
 - requests
 - pillow
+- mysqlclient
+- twisted
 
 ### scrapy shell debug
 ```

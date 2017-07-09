@@ -8,6 +8,7 @@
 import scrapy
 
 
+
 class ZhihucrawlerItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
@@ -24,6 +25,12 @@ class ZhihuQuestionItem(scrapy.Item):
     watch_user_num = scrapy.Field()
     click_num = scrapy.Field()
     crawl_time = scrapy.Field()
+
+    def get_insert_sql(self):
+        pass
+
+
+
 
 class ZhihuAnswerItem(scrapy.Item):
     zhihu_id = scrapy.Field()
