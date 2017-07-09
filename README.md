@@ -13,3 +13,5 @@ python3
 scrapy shell -s USER_AGENT="xxx" xxxxxxxx
 ```
 
+### solve pycharm import package Unresolved reference
+http://blog.csdn.net/u014496330/article/details/55211398
