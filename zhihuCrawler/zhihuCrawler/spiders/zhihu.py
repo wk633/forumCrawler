@@ -11,8 +11,8 @@ import datetime
 class ZhihuSpider(scrapy.Spider):
     name = 'zhihu'
     allowed_domains = ['zhihu.com']
-    start_urls = ['http://zhihu.com/']
-    # start_urls = ['https://www.zhihu.com/question/29372574']
+    # start_urls = ['http://zhihu.com/']
+    start_urls = ['https://www.zhihu.com/question/29372574']
 
     start_answer_url = "https://www.zhihu.com/api/v4/questions/{0}/answers?sort_by=default&include=data%5B%2A%5D.is_normal%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Cmark_infos%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cupvoted_followees%3Bdata%5B%2A%5D.author.follower_count%2Cbadge%5B%3F%28type%3Dbest_answerer%29%5D.topics&limit={1}&offset={2}"
 
@@ -49,19 +49,19 @@ class ZhihuSpider(scrapy.Spider):
         if "QuestionHeader-title" in response.text:
             item_loader = ItemLoader(item=ZhihuQuestionItem(), response=response)
             item_loader.add_value('zhihu_id', question_id)
-            item_loader.add_css('topics', '.Tag.QuestionTopic div.Popover::text')
+            item_loader.add_css('topics', '.Tag.QuestionTopic div.Popover div::text')
             item_loader.add_value('url', response.url)
             item_loader.add_css('title', 'h1.QuestionHeader-title::text')
             item_loader.add_css('content', '.QuestionHeader-detail')
-            item_loader.add_css('answer_num', 'h4.List-headerText span::text')
-            item_loader.add_css('comments_num', 'div.QuestionHeader-Comment button::text')
+            item_loader.add_css('answer_num', 'h4.List-headerText span::text') # '65 个回答'
+            item_loader.add_css('comments_num', 'div.QuestionHeader-Comment button::text') # '23 条评论'
             item_loader.add_css('watch_user_num', '.NumberBoard-value::text')
             item_loader.add_css('click_num', '.NumberBoard-value::text')
             # item_loader.add_value('crawl_time', '')
 
             question_item = item_loader.load_item()
             print(self.start_answer_url.format(question_id, 20, 0))
-            yield scrapy.Request(self.start_answer_url.format(question_id, 20, 0), headers=self.headers, callback=self.parse_answers)
+            # yield scrapy.Request(self.start_answer_url.format(question_id, 20, 0), headers=self.headers, callback=self.parse_answers)
             yield question_item
 
         else:
@@ -95,15 +95,15 @@ class ZhihuSpider(scrapy.Spider):
             pass
 
 
-    # def start_requests(self):
-    #     for url in self.start_urls:
-    #         yield scrapy.Request(url, dont_filter=True, headers=self.headers)
-
-
     def start_requests(self):
-        # override default start_requests function
-        # first do login
-        return [scrapy.Request("https://www.zhihu.com/",headers=self.headers, callback=self.login)]
+        for url in self.start_urls:
+            yield scrapy.Request(url, dont_filter=True, headers=self.headers)
+
+
+    # def start_requests(self):
+    #     # override default start_requests function
+    #     # first do login
+    #     return [scrapy.Request("https://www.zhihu.com/",headers=self.headers, callback=self.login)]
 
     def login(self, response):
         match_obj = re.match('.*name="_xsrf" value="(.*?)"', response.text, re.S)

@@ -64,9 +64,10 @@ COOKIES_ENABLED = True
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'zhihuCrawler.pipelines.ZhihucrawlerPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'zhihuCrawler.pipelines.ZhihucrawlerPipeline': 300,
+   'zhihuCrawler.pipelines.MysqlAsyncPipeline': 1
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -93,3 +94,6 @@ MYSQL_HOST = "127.0.0.1"
 MYSQL_DBNAME = "zhihu"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = ""
+
+SQL_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+SQL_DATE_FORMAT = "%Y-%m-%d"

@@ -34,12 +34,12 @@ class MysqlAsyncPipeline(object):
 
     def process_item(self, item, spider):
         insertion = self.dbPool.runInteraction(self.insertRow, item)
-        insertion.addErrback = self.error_handler
+        insertion.addErrback(self.error_handler, item)
 
     def insertRow(self, cursor, item):
         insert_sql, params = item.get_insert_sql()
         cursor.execute(insert_sql, params)
         # commit automatically
 
-    def error_handler(self, e):
+    def error_handler(self, e, item):
         print(e)
